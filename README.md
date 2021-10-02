@@ -6,4 +6,3 @@ Unofficial Firebase Dart SDK
 
 * Firebase Core
 * Firebase Auth
-* Cloud Firestore

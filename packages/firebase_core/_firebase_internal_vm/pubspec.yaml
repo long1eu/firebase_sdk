@@ -1,0 +1,11 @@
+name: _firebase_internal_vm
+description: For internal use of the Firebase packages
+version: 0.1.0
+homepage: https://github.com/long1eu/firebase_sdk
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  collection: ^1.15.0
+  meta: ^1.7.0
