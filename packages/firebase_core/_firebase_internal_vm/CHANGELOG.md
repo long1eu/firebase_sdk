@@ -1,3 +1,6 @@
+## 0.1.0+1
+- update pubspec link
+
 ## 0.1.0
 - migrate to null-safety
 

@@ -4,8 +4,6 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-
 import 'auth.dart';
 import 'util/to_string_helper.dart';
 
@@ -16,7 +14,7 @@ abstract class InternalTokenProvider {
   ///
   /// [forceRefresh] force refreshes the token. Should only be set to true if
   /// the token is invalidated out of band.
-  Future<GetTokenResult> getAccessToken({@required bool forceRefresh});
+  Future<GetTokenResult> getAccessToken({required bool forceRefresh});
 
   /// A synchronous way to get the current Firebase User's UID.
   /// Returns the String representation of the UID. Returns null if FirebaseAuth
