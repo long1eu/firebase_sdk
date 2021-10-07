@@ -17,27 +17,31 @@ class RecaptchaToken implements base.RecaptchaToken {
   final FirebaseAuthApi authApi;
 
   @override
-  Future<String> get({UrlPresenter urlPresenter, String apiKey, String languageCode}) async {
+  Future<String> get({
+    required UrlPresenter urlPresenter,
+    required String apiKey,
+    required String languageCode,
+  }) async {
     final Completer<String> completer = Completer<String>();
     final GetRecaptchaParamResponse params = await authApi.getRecaptchaParam();
 
     final DivElement div = DivElement() //
       ..id = 'grecaptcha-badge';
-    document.body.children.add(div);
+    document.body!.children.add(div);
 
-    ScriptElement script;
+    late ScriptElement script;
     context['onLoad'] = () {
       final JsObject grecaptcha = context['grecaptcha'];
 
-      void complete({String token, Object error}) {
+      void complete({String? token, Object? error}) {
         if (token != null) {
           completer.complete(token);
         } else {
-          completer.completeError(error);
+          completer.completeError(error!);
         }
 
-        document.body.children.remove(div);
-        document.head.children.remove(script);
+        document.body!.children.remove(div);
+        document.head!.children.remove(script);
       }
 
       final int id = grecaptcha.callMethod(
@@ -48,7 +52,8 @@ class RecaptchaToken implements base.RecaptchaToken {
             'sitekey': params.recaptchaSiteKey,
             'size': 'invisible',
             'callback': (String token) => complete(token: token),
-            'expired-callback': () => complete(error: StateError('Session expired')),
+            'expired-callback': () =>
+                complete(error: StateError('Session expired')),
             'error-callback': (dynamic error) => complete(error: error),
           }),
         ],
@@ -57,8 +62,10 @@ class RecaptchaToken implements base.RecaptchaToken {
       grecaptcha.callMethod('execute', <int>[id]);
     };
 
-    script = ScriptElement()..src = 'https://www.google.com/recaptcha/api.js?onload=onLoad&hl=$languageCode';
-    document.head.children.add(script);
+    script = ScriptElement()
+      ..src =
+          'https://www.google.com/recaptcha/api.js?onload=onLoad&hl=$languageCode';
+    document.head!.children.add(script);
 
     return completer.future;
   }

@@ -4,42 +4,49 @@
 
 part of firebase_auth_vm;
 
+// todo: authorizationCode constructor is not used so I commented out related
+//  code and assumed that we always have an access token, refresh token and
+//  expiration timestamp
 class SecureTokenApi {
   /// Creates a SecureTokenService with access and refresh tokens.
   SecureTokenApi({
-    @required Client client,
-    @required String accessToken,
-    @required DateTime accessTokenExpirationDate,
-    @required String refreshToken,
-  })  : assert(client != null),
-        _secureTokenService = SecureTokenService(client),
+    required Client client,
+    required String accessToken,
+    required DateTime accessTokenExpirationDate,
+    required String refreshToken,
+  })  : _secureTokenService = SecureTokenService(client),
         _accessToken = accessToken,
         _accessTokenExpirationDate = accessTokenExpirationDate,
         _refreshToken = refreshToken;
 
+  /* not used
   /// Creates a SecureTokenService with an authorization code.
   ///
   /// [authorizationCode] needs to be exchanged for STS tokens.
-  SecureTokenApi.authorizationCode({@required Client client, @required String authorizationCode})
-      : assert(client != null),
-        _secureTokenService = SecureTokenService(client),
+  SecureTokenApi.authorizationCode({
+    required Client client,
+    required String authorizationCode,
+  })  : _secureTokenService = SecureTokenService(client),
         _authorizationCode = authorizationCode;
+
+  /// An authorization code which needs to be exchanged for Secure Token Service
+  /// tokens.
+  String? _authorizationCode;
+  */
 
   final SecureTokenService _secureTokenService;
 
-  /// The currently cached access token. Or null if no token is currently cached.
+  /// The currently cached access token. Or null if no token is currently
+  /// cached.
   String _accessToken;
-
-  /// An authorization code which needs to be exchanged for Secure Token Service tokens.
-  String _authorizationCode;
 
   DateTime _accessTokenExpirationDate;
 
   String _refreshToken;
 
-  /// Fetch a fresh ephemeral access token for the ID associated with this instance.
-  ///
-  /// The token received in should be considered short lived and not cached.
+  /// Fetch a fresh ephemeral access token for the ID associated with this
+  /// instance. The token received in should be considered short lived and not
+  /// cached.
   Future<String> fetchAccessToken({bool forceRefresh = false}) async {
     if (!forceRefresh && hasValidAccessToken) {
       return _accessToken;
@@ -50,22 +57,27 @@ class SecureTokenApi {
 
   /// Makes a request to STS for an access token.
   Future<String> _requestAccessToken() async {
-    SecureTokenRequest request;
-    if (_refreshToken.isNotEmpty) {
-      request = SecureTokenRequest.withRefreshToken(_refreshToken);
+    final SecureTokenRequest request =
+        SecureTokenRequest.withRefreshToken(_refreshToken);
+    /* not used
+    if (_refreshToken != null && _refreshToken!.isNotEmpty) {
+      request = SecureTokenRequest.withRefreshToken(_refreshToken!);
     } else {
-      request = SecureTokenRequest.withCode(_authorizationCode);
+      assert(_authorizationCode != null);
+      request = SecureTokenRequest.withCode(_authorizationCode!);
     }
+    */
 
-    final SecureTokenResponse response = await _secureTokenService.refreshToken(request);
+    final SecureTokenResponse response =
+        await _secureTokenService.refreshToken(request);
     final String newAccessToken = response.accessToken;
-    if (newAccessToken != null && newAccessToken != _accessToken) {
+    if (newAccessToken.isNotEmpty && newAccessToken != _accessToken) {
       _accessToken = newAccessToken;
       _accessTokenExpirationDate = response.approximateExpirationDate;
     }
 
     final String newRefreshToken = response.refreshToken;
-    if (newRefreshToken != null && newRefreshToken != _refreshToken) {
+    if (newRefreshToken.isNotEmpty && newRefreshToken != _refreshToken) {
       _refreshToken = newRefreshToken;
     }
 
@@ -73,7 +85,8 @@ class SecureTokenApi {
   }
 
   bool get hasValidAccessToken {
-    return _accessToken != null &&
-        _accessTokenExpirationDate.difference(DateTime.now().toUtc()) > _kTokenRefreshHeadStart;
+    final Duration difference =
+        _accessTokenExpirationDate.toUtc().difference(DateTime.now().toUtc());
+    return _accessToken != null && difference > _kTokenRefreshHeadStart;
   }
 }

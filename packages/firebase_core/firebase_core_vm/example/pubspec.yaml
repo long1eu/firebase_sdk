@@ -1,0 +1,23 @@
+name: firebase_core_vm_example
+description: Example app for firebase_core_vm
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  connectivity_plus: ^1.2.0
+  cupertino_icons: ^1.0.3
+  hive: ^2.0.4
+  path_provider: ^2.0.5
+
+dependency_overrides:
+  firebase_platform_dependencies:
+    path: ../../firebase_platform_dependencies
+  firebase_core_vm:
+    path: ../
+
+flutter:
+  uses-material-design: true

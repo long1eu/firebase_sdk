@@ -4,6 +4,8 @@
 
 part of firebase_auth_vm;
 
+typedef AssertionRequest = VerifyAssertionRequest;
+
 /// Represents a credential.
 abstract class AuthCredential {
   /// The identity provider for the credential
@@ -16,21 +18,24 @@ abstract class AuthCredential {
 
   Map<String, dynamic> get json;
 
-  /// Called immediately before a request to the verifyAssertion endpoint is made.
-  ///
-  /// Implementers should update the passed request instance with their credentials.
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request);
+  /// Called immediately before a request to the `verifyAssertion` endpoint is
+  /// made. Implementers should update the passed request instance with their
+  /// credentials.
+  void prepareVerifyAssertionRequest(AssertionRequest request);
 }
 
 /// Internal implementation of [AuthCredential] for Email/Password credentials.
 class EmailPasswordAuthCredential implements AuthCredential {
   EmailPasswordAuthCredential._({
-    @required this.email,
+    required this.email,
     this.password,
     this.link,
-  })  : assert(password != null || link != null, 'You must either provide a password or the email link.'),
+  })  : assert(password != null || link != null,
+            'You must either provide a password or the email link.'),
         providerId = ProviderType.password,
-        signInMethod = link == null ? ProviderMethod.emailLink : ProviderMethod.password;
+        signInMethod = link == null //
+            ? ProviderMethod.emailLink
+            : ProviderMethod.password;
 
   /// The identity provider for the credential
   @override
@@ -44,16 +49,17 @@ class EmailPasswordAuthCredential implements AuthCredential {
   final String email;
 
   /// The user's password.
-  /*@nullable*/
-  final String password;
+  final String? password;
 
   /// The email sign-in link.
-  /*@nullable*/
-  final String link;
+  final String? link;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
-    throw FirebaseAuthError('NOT_IMPLEMENTED', 'You should not use the postBody of a EmailPasswordAuthCredential.');
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
+    throw FirebaseAuthError(
+      'NOT_IMPLEMENTED',
+      'You should not use the postBody of a EmailPasswordAuthCredential.',
+    );
   }
 
   @override
@@ -96,9 +102,12 @@ class FacebookAuthCredential implements AuthCredential {
   final String accessToken;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
     request
-      ..postBody = 'providerId=$providerId&access_token=$accessToken'
+      ..postBody = <String, String>{
+        'providerId': providerId,
+        'access_token': accessToken
+      }.query
       ..requestUri = 'http://localhost';
   }
 
@@ -123,12 +132,12 @@ class FacebookAuthCredential implements AuthCredential {
 /// Internal implementation of [AuthCredential] for Game Center credentials.
 class GameCenterAuthCredential implements AuthCredential {
   GameCenterAuthCredential._({
-    @required this.playerId,
-    @required this.publicKeyUrl,
-    @required this.signature,
-    @required this.salt,
-    @required this.timestamp,
-    @required this.displayName,
+    required this.playerId,
+    required this.publicKeyUrl,
+    required this.signature,
+    required this.salt,
+    required this.timestamp,
+    required this.displayName,
   })  : providerId = ProviderType.gameCenter,
         signInMethod = ProviderMethod.gameCenter;
 
@@ -159,8 +168,11 @@ class GameCenterAuthCredential implements AuthCredential {
   final String displayName;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
-    throw FirebaseAuthError('NOT_IMPLEMENTED', 'You should not use the postBody of a GameCenterAuthCredential.');
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
+    throw FirebaseAuthError(
+      'NOT_IMPLEMENTED',
+      'You should not use the postBody of a GameCenterAuthCredential.',
+    );
   }
 
   @override
@@ -209,9 +221,12 @@ class GithubAuthCredential implements AuthCredential {
   final String token;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
     request
-      ..postBody = 'providerId=$providerId&access_token=$token'
+      ..postBody = <String, String>{
+        'providerId': providerId,
+        'access_token': token
+      }.query
       ..requestUri = 'http://localhost';
   }
 
@@ -235,7 +250,7 @@ class GithubAuthCredential implements AuthCredential {
 
 /// Internal implementation of [AuthCredential] for the Google IdP.
 class GoogleAuthCredential implements AuthCredential {
-  GoogleAuthCredential._({@required this.idToken, @required this.accessToken})
+  GoogleAuthCredential._({required this.idToken, required this.accessToken})
       : providerId = ProviderType.google,
         signInMethod = ProviderMethod.google;
 
@@ -254,9 +269,13 @@ class GoogleAuthCredential implements AuthCredential {
   final String accessToken;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
     request
-      ..postBody = 'providerId=$providerId&id_token=$idToken&access_token=$accessToken'
+      ..postBody = <String, String>{
+        'providerId': providerId,
+        'id_token': idToken,
+        'access_token': accessToken
+      }.query
       ..requestUri = 'http://localhost';
   }
 
@@ -283,7 +302,7 @@ class GoogleAuthCredential implements AuthCredential {
 /// Internal implementation of [AuthCredential] for GitHub credentials.
 class OAuthCredential implements AuthCredential {
   OAuthCredential._({
-    @required this.providerId,
+    required this.providerId,
     this.scopes,
     this.customParameters,
     this.sessionId,
@@ -304,52 +323,45 @@ class OAuthCredential implements AuthCredential {
   final String signInMethod;
 
   /// Used to configure the OAuth scopes.
-  /*@nullable*/
-  final List<String> scopes;
+  final List<String>? scopes;
 
   /// Used to configure the OAuth custom parameters.
-  /*@nullable*/
-  final Map<String, String> customParameters;
+
+  final Map<String, String>? customParameters;
 
   /// The session ID used when completing the headful-lite flow.
-  /*@nullable*/
-  final String sessionId;
+
+  final String? sessionId;
 
   /// A string representation of the response URL corresponding to this OAuthCredential.
-  /*@nullable*/
-  final String requestUri;
 
-  /*@nullable*/
-  final String idToken;
+  final String? requestUri;
 
-  /*@nullable*/
-  final String accessToken;
+  final String? idToken;
 
-  /*@nullable*/
-  final String secret;
+  final String? accessToken;
+
+  final String? secret;
 
   /// The pending token used when completing the headful-lite flow.
   ///
   /// Where the IdP response is encrypted.
-  /*@nullable*/
-  final String pendingToken;
 
-  /*@nullable*/
-  final String nonce;
+  final String? pendingToken;
+
+  final String? nonce;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
-    final Map<String, String> fields = <String, String>{
-      if (customParameters != null) ...customParameters,
-      if (scopes != null && scopes.isNotEmpty) 'scope': scopes.join(' '),
-      if (idToken != null) 'id_token': idToken,
-      if (secret != null) 'oauth_token_secret': secret,
-      'providerId': providerId,
-      'access_token': accessToken,
-    };
-
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
     request
-      ..postBody = fields.keys.map((String key) => '$key=${fields[key]}').join('&')
+      ..postBody = <String, String>{
+        if (customParameters != null) ...customParameters!,
+        if (scopes != null && scopes!.isNotEmpty) 'scope': scopes!.join(' '),
+        if (idToken != null) 'id_token': idToken!,
+        if (secret != null) 'oauth_token_secret': secret!,
+        'providerId': providerId,
+        'access_token': accessToken!,
+      }.query
       ..requestUri = requestUri ?? 'http://localhost'
       ..sessionId = sessionId
       ..pendingIdToken = pendingToken;
@@ -406,25 +418,27 @@ class PhoneAuthCredential implements AuthCredential {
   @override
   final String signInMethod;
 
-  /// The verification ID obtained from invoking [FirebaseAuth.verifyPhoneNumber]
-  /*@nullable*/
-  final String verificationId;
+  /// The verification ID obtained from invoking
+  /// [FirebaseAuth.verifyPhoneNumber]
+  final String? verificationId;
 
   /// The verification code provided by the user.
-  /*@nullable*/
-  final String verificationCode;
+  final String? verificationCode;
 
-  /// The a temporary proof code pertaining to this credential, returned from the backend.
-  /*@nullable*/
-  final String temporaryProof;
+  /// The a temporary proof code pertaining to this credential, returned from
+  /// the backend.
+  final String? temporaryProof;
 
-  /// The a phone number pertaining to this credential, returned from the backend.
-  /*@nullable*/
-  final String phoneNumber;
+  /// The a phone number pertaining to this credential, returned from the
+  /// backend.
+  final String? phoneNumber;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
-    throw FirebaseAuthError('NOT_IMPLEMENTED', 'You should not use the postBody of a PhoneAuthCredential.');
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
+    throw FirebaseAuthError(
+      'NOT_IMPLEMENTED',
+      'You should not use the postBody of a PhoneAuthCredential.',
+    );
   }
 
   @override
@@ -453,8 +467,10 @@ class PhoneAuthCredential implements AuthCredential {
 
 /// Internal implementation of FIRAuthCredential for Twitter credentials.
 class TwitterAuthCredential implements AuthCredential {
-  TwitterAuthCredential._({@required this.authToken, @required this.authTokenSecret})
-      : providerId = ProviderType.twitter,
+  TwitterAuthCredential._({
+    required this.authToken,
+    required this.authTokenSecret,
+  })  : providerId = ProviderType.twitter,
         signInMethod = ProviderMethod.twitter;
 
   /// The identity provider for the credential
@@ -472,9 +488,13 @@ class TwitterAuthCredential implements AuthCredential {
   final String authTokenSecret;
 
   @override
-  void prepareVerifyAssertionRequest(IdentitytoolkitRelyingpartyVerifyAssertionRequest request) {
+  void prepareVerifyAssertionRequest(AssertionRequest request) {
     request
-      ..postBody = 'providerId=$providerId&access_token=$authToken&oauth_token_secret=$authTokenSecret'
+      ..postBody = <String, String>{
+        'providerId': providerId,
+        'access_token': authToken,
+        'oauth_token_secret': authTokenSecret,
+      }.query
       ..requestUri = 'http://localhost';
   }
 

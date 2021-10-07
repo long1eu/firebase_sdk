@@ -7,7 +7,7 @@ part of firebase_auth_vm;
 /// Represents user data returned from an identity provider.
 class UserInfo {
   const UserInfo._({
-    this.uid,
+    required this.uid,
     this.providerId,
     this.displayName,
     this.photoUrl,
@@ -29,34 +29,27 @@ class UserInfo {
   }
 
   /// The provider's user ID for the user.
-  /*@nullable*/
   final String uid;
 
   /// The provider identifier.
-  /*@nullable*/
-  final String providerId;
+  final String? providerId;
 
   /// The name of the user.
-  /*@nullable*/
-  final String displayName;
+  final String? displayName;
 
   /// The URL of the user's profile photo.
-  /*@nullable*/
-  final String photoUrl;
+  final String? photoUrl;
 
   /// The user's email address.
-  /*@nullable*/
-  final String email;
+  final String? email;
 
   /// A phone number associated with the user.
   ///
   /// This property is only available for users authenticated via phone number auth.
-  /*@nullable*/
-  final String phoneNumber;
+  final String? phoneNumber;
 
   /// Indicates the email address associated with this user has been verified.
-  /*@nullable*/
-  final bool isEmailVerified;
+  final bool? isEmailVerified;
 
   @override
   String toString() {
@@ -75,7 +68,7 @@ class UserInfo {
 extension UserInfoExtension on UserInfo {
   Map<String, dynamic> get _json {
     return <String, dynamic>{
-      if (uid != null) 'uid': uid,
+      'uid': uid,
       if (providerId != null) 'providerId': providerId,
       if (displayName != null) 'displayName': displayName,
       if (photoUrl != null) 'photoUrl': photoUrl,
@@ -86,13 +79,13 @@ extension UserInfoExtension on UserInfo {
   }
 
   UserInfo _copyWith({
-    String uid,
-    String providerId,
-    String displayName,
-    String photoUrl,
-    String email,
-    String phoneNumber,
-    bool isEmailVerified,
+    String? uid,
+    String? providerId,
+    String? displayName,
+    String? photoUrl,
+    String? email,
+    String? phoneNumber,
+    bool? isEmailVerified,
     bool removePhoneNumber = false,
   }) {
     return UserInfo._(
@@ -107,67 +100,44 @@ extension UserInfoExtension on UserInfo {
   }
 }
 
-mixin UserInfoMixin implements UserInfo {
-  UserInfo _userInfo;
-
-  @override
-  String get uid => _userInfo.uid;
-
-  @override
-  String get providerId => _userInfo.providerId;
-
-  @override
-  String get displayName => _userInfo.displayName;
-
-  @override
-  String get photoUrl => _userInfo.photoUrl;
-
-  @override
-  String get email => _userInfo.email;
-
-  @override
-  String get phoneNumber => _userInfo.phoneNumber;
-
-  @override
-  bool get isEmailVerified => _userInfo.isEmailVerified;
-}
-
 /// Represents additional user data returned from an identity provider.
 class AdditionalUserInfo {
   AdditionalUserInfo._({
     this.providerId,
     this.profile,
     this.username,
-    @required this.isNewUser,
+    required this.isNewUser,
   });
 
   factory AdditionalUserInfo.newAnonymous() {
     return AdditionalUserInfo._(isNewUser: true);
   }
 
-  factory AdditionalUserInfo.fromVerifyAssertionResponse(VerifyAssertionResponse response) {
+  factory AdditionalUserInfo.fromVerifyAssertionResponse(
+      VerifyAssertionResponse response) {
     return AdditionalUserInfo._(
-      providerId: response.providerId,
-      profile: response.rawUserInfo != null ? Map<String, dynamic>.from(jsonDecode(response.rawUserInfo)) : null,
+      providerId: response.providerId!,
+      profile: response.rawUserInfo != null
+          ? Map<String, dynamic>.from(jsonDecode(response.rawUserInfo!))
+          : null,
       username: response.screenName,
       isNewUser: response.isNewUser ?? false,
     );
   }
 
-  /// Returns the provider ID for specifying which provider the information in [profile] is for.
-  /*@nullable*/
-  final String providerId;
+  /// Returns the provider ID for specifying which provider the information in
+  /// [profile] is for.
+  final String? providerId;
 
-  /// Returns a Map containing IDP-specific user data if the provider is one of Facebook, GitHub, Google, Twitter,
-  /// Microsoft, or Yahoo.
-  /*@nullable*/
-  final Map<String, Object> profile;
+  /// Returns a Map containing IDP-specific user data if the provider is one of
+  /// Facebook, GitHub, Google, Twitter, Microsoft, or Yahoo.
+  final Map<String, dynamic>? profile;
 
   /// Returns the username if the provider is GitHub or Twitter
-  /*@nullable*/
-  final String username;
+  final String? username;
 
-  /// Indicates whether or not the current user was signed in for the first time.
+  /// Indicates whether or not the current user was signed in for the first
+  /// time.
   final bool isNewUser;
 
   @override
@@ -184,27 +154,33 @@ class AdditionalUserInfo {
 /// A data class representing the metadata corresponding to a Firebase user.
 class UserMetadata {
   const UserMetadata._({
-    @required this.lastSignInDate,
-    @required this.creationDate,
+    required this.lastSignInDate,
+    required this.creationDate,
   });
 
   factory UserMetadata._fromJson(Map<String, dynamic> json) {
     return UserMetadata._(
-      lastSignInDate: DateTime.fromMicrosecondsSinceEpoch(json['lastSignInDate']),
-      creationDate: DateTime.fromMicrosecondsSinceEpoch(json['creationDate']),
+      lastSignInDate: json.containsKey('lastSignInDate')
+          ? DateTime.fromMicrosecondsSinceEpoch(json['lastSignInDate'])
+          : null,
+      creationDate: json.containsKey('creationDate')
+          ? DateTime.fromMicrosecondsSinceEpoch(json['creationDate'])
+          : null,
     );
   }
 
   /// Stores the last sign in date for the corresponding Firebase user.
-  final DateTime lastSignInDate;
+  final DateTime? lastSignInDate;
 
   /// Stores the creation date for the corresponding Firebase user.
-  final DateTime creationDate;
+  final DateTime? creationDate;
 
   Map<String, dynamic> get _json {
     return <String, dynamic>{
-      'lastSignInDate': lastSignInDate.microsecondsSinceEpoch,
-      'creationDate': creationDate.microsecondsSinceEpoch,
+      if (lastSignInDate != null)
+        'lastSignInDate': lastSignInDate!.microsecondsSinceEpoch,
+      if (creationDate != null)
+        'creationDate': creationDate!.microsecondsSinceEpoch,
     };
   }
 

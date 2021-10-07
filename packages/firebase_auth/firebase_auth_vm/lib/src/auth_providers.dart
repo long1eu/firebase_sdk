@@ -7,7 +7,7 @@ part of firebase_auth_vm;
 /// A base class which all providers must extend.
 abstract class AuthProvider {
   /// Constructs a new instance with a given provider identifier.
-  const AuthProvider({@required this.providerId, @required this.signInMethod});
+  const AuthProvider({required this.providerId, required this.signInMethod});
 
   /// The provider ID.
   final String providerId;
@@ -16,22 +16,37 @@ abstract class AuthProvider {
 }
 
 class EmailAuthProvider extends AuthProvider {
-  const EmailAuthProvider() : super(providerId: ProviderType.password, signInMethod: ProviderMethod.password);
+  const EmailAuthProvider()
+      : super(
+          providerId: ProviderType.password,
+          signInMethod: ProviderMethod.password,
+        );
 
   /// Creates an [AuthCredential] for an email & password sign in.
-  static AuthCredential credential({@required String email, @required String password}) {
+  static AuthCredential credential({
+    required String email,
+    required String password,
+  }) {
     return EmailPasswordAuthCredential._(email: email, password: password);
   }
 
   /// Creates an [AuthCredential] for an email & link sign in.
-  static AuthCredential credentialWithLink({@required String email, @required String link}) {
+  static AuthCredential credentialWithLink({
+    required String email,
+    required String link,
+  }) {
     return EmailPasswordAuthCredential._(email: email, link: link);
   }
 }
 
 class FacebookAuthProvider extends AuthProvider {
-  const FacebookAuthProvider({this.scopes = const <String>[], this.parameters = const <dynamic, dynamic>{}})
-      : super(providerId: ProviderType.facebook, signInMethod: ProviderMethod.facebook);
+  const FacebookAuthProvider({
+    this.scopes = const <String>[],
+    this.parameters = const <dynamic, dynamic>{},
+  }) : super(
+          providerId: ProviderType.facebook,
+          signInMethod: ProviderMethod.facebook,
+        );
 
   /// The OAuth scopes
   final List<String> scopes;
@@ -57,16 +72,20 @@ class FacebookAuthProvider extends AuthProvider {
 }
 
 class GameCenterAuthProvider extends AuthProvider {
-  const GameCenterAuthProvider() : super(providerId: ProviderType.gameCenter, signInMethod: ProviderMethod.gameCenter);
+  const GameCenterAuthProvider()
+      : super(
+          providerId: ProviderType.gameCenter,
+          signInMethod: ProviderMethod.gameCenter,
+        );
 
   /// Creates an [AuthCredential] for a GameCenter sign in.
   static AuthCredential credential({
-    @required String playerId,
-    @required String publicKeyUrl,
-    @required Uint8List signature,
-    @required Uint8List salt,
-    @required DateTime timestamp,
-    @required String displayName,
+    required String playerId,
+    required String publicKeyUrl,
+    required Uint8List signature,
+    required Uint8List salt,
+    required DateTime timestamp,
+    required String displayName,
   }) {
     return GameCenterAuthCredential._(
       playerId: playerId,
@@ -80,8 +99,13 @@ class GameCenterAuthProvider extends AuthProvider {
 }
 
 class GithubAuthProvider extends AuthProvider {
-  const GithubAuthProvider({this.scopes = const <String>[], this.parameters = const <dynamic, dynamic>{}})
-      : super(providerId: ProviderType.github, signInMethod: ProviderMethod.github);
+  const GithubAuthProvider({
+    this.scopes = const <String>[],
+    this.parameters = const <dynamic, dynamic>{},
+  }) : super(
+          providerId: ProviderType.github,
+          signInMethod: ProviderMethod.github,
+        );
 
   /// The OAuth scopes
   final List<String> scopes;
@@ -107,8 +131,13 @@ class GithubAuthProvider extends AuthProvider {
 }
 
 class GoogleAuthProvider extends AuthProvider {
-  const GoogleAuthProvider({this.scopes = const <String>[], this.parameters = const <dynamic, dynamic>{}})
-      : super(providerId: ProviderType.google, signInMethod: ProviderMethod.google);
+  const GoogleAuthProvider({
+    this.scopes = const <String>[],
+    this.parameters = const <dynamic, dynamic>{},
+  }) : super(
+          providerId: ProviderType.google,
+          signInMethod: ProviderMethod.google,
+        );
 
   /// The OAuth scopes
   final List<String> scopes;
@@ -118,7 +147,10 @@ class GoogleAuthProvider extends AuthProvider {
   final Map<dynamic, dynamic> parameters;
 
   /// Creates an [AuthCredential] for a Google sign in.
-  static AuthCredential credential({@required String idToken, @required String accessToken}) {
+  static AuthCredential credential({
+    required String idToken,
+    required String accessToken,
+  }) {
     return GoogleAuthCredential._(idToken: idToken, accessToken: accessToken);
   }
 
@@ -134,8 +166,11 @@ class GoogleAuthProvider extends AuthProvider {
 }
 
 class OAuthProvider extends AuthProvider {
-  const OAuthProvider(String providerId, {this.scopes = const <String>[], this.parameters = const <dynamic, dynamic>{}})
-      : super(providerId: providerId, signInMethod: ProviderMethod.oauth);
+  const OAuthProvider(
+    String providerId, {
+    this.scopes = const <String>[],
+    this.parameters = const <dynamic, dynamic>{},
+  }) : super(providerId: providerId, signInMethod: ProviderMethod.oauth);
 
   /// The OAuth scopes
   final List<String> scopes;
@@ -145,9 +180,9 @@ class OAuthProvider extends AuthProvider {
   final Map<dynamic, dynamic> parameters;
 
   static AuthCredential credentialWithAccessToken({
-    @required String providerId,
-    @required String accessToken,
-    String idToken,
+    required String providerId,
+    required String accessToken,
+    String? idToken,
   }) {
     return OAuthCredential._(
       providerId: providerId,
@@ -157,10 +192,10 @@ class OAuthProvider extends AuthProvider {
   }
 
   static AuthCredential credentialWithNonce({
-    @required String providerId,
-    @required String accessToken,
-    @required String rawNonce,
-    @required String idToken,
+    required String providerId,
+    required String accessToken,
+    required String rawNonce,
+    required String idToken,
   }) {
     return OAuthCredential._(
       providerId: providerId,
@@ -182,14 +217,30 @@ class OAuthProvider extends AuthProvider {
 }
 
 class PhoneAuthProvider extends AuthProvider {
-  const PhoneAuthProvider() : super(providerId: ProviderType.phone, signInMethod: ProviderMethod.phone);
+  const PhoneAuthProvider()
+      : super(
+          providerId: ProviderType.phone,
+          signInMethod: ProviderMethod.phone,
+        );
 
-  static AuthCredential credential({@required String verificationId, @required String verificationCode}) {
-    return PhoneAuthCredential._(verificationId: verificationId, verificationCode: verificationCode);
+  static AuthCredential credential({
+    required String verificationId,
+    required String verificationCode,
+  }) {
+    return PhoneAuthCredential._(
+      verificationId: verificationId,
+      verificationCode: verificationCode,
+    );
   }
 
-  static AuthCredential credentialWithTemporaryProof({@required String temporaryProof, @required String phoneNumber}) {
-    return PhoneAuthCredential._(temporaryProof: temporaryProof, phoneNumber: phoneNumber);
+  static AuthCredential credentialWithTemporaryProof({
+    required String temporaryProof,
+    required String phoneNumber,
+  }) {
+    return PhoneAuthCredential._(
+      temporaryProof: temporaryProof,
+      phoneNumber: phoneNumber,
+    );
   }
 
   @override
@@ -203,15 +254,24 @@ class PhoneAuthProvider extends AuthProvider {
 
 class TwitterAuthProvider extends AuthProvider {
   const TwitterAuthProvider({this.parameters = const <dynamic, dynamic>{}})
-      : super(providerId: ProviderType.twitter, signInMethod: ProviderMethod.twitter);
+      : super(
+          providerId: ProviderType.twitter,
+          signInMethod: ProviderMethod.twitter,
+        );
 
   /// The OAuth custom parameters to pass in a Twitter OAuth request for
   /// popup and redirect sign-in operations.
   final Map<dynamic, dynamic> parameters;
 
   /// Creates an [AuthCredential] for Twitter sign in.
-  static AuthCredential credential({@required String authToken, @required String authTokenSecret}) {
-    return TwitterAuthCredential._(authToken: authToken, authTokenSecret: authTokenSecret);
+  static AuthCredential credential({
+    required String authToken,
+    required String authTokenSecret,
+  }) {
+    return TwitterAuthCredential._(
+      authToken: authToken,
+      authTokenSecret: authTokenSecret,
+    );
   }
 
   @override

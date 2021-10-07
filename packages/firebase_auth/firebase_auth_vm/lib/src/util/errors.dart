@@ -142,14 +142,13 @@ class FirebaseAuthError extends FirebaseError {
       case 'MALFORMED_JWT':
         return malformedJWT;
       default:
-        return FirebaseAuthError._(-1, '$name${message.isEmpty ? '' : ' : $message'}', 'unknown');
+        return FirebaseAuthError._(
+            -1, '$name${message.isEmpty ? '' : ' : $message'}', 'unknown');
     }
   }
 
   FirebaseAuthError._(this.code, String message, this.codeName)
-      : assert(code != null),
-        assert(codeName != null),
-        super(message);
+      : super(message);
 
   final int code;
   final String codeName;
@@ -225,7 +224,8 @@ class FirebaseAuthError extends FirebaseError {
   );
 
   /// Indicates account linking is required.
-  static final FirebaseAuthError accountExistsWithDifferentCredential = FirebaseAuthError._(
+  static final FirebaseAuthError accountExistsWithDifferentCredential =
+      FirebaseAuthError._(
     17012,
     'An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.',
     'account-exists-with-different-credential',
@@ -358,7 +358,8 @@ class FirebaseAuthError extends FirebaseError {
   );
 
   /// Indicates that the android package name is missing when the `androidInstallApp` flag is set to true.
-  static final FirebaseAuthError missingAndroidPackageName = FirebaseAuthError._(
+  static final FirebaseAuthError missingAndroidPackageName =
+      FirebaseAuthError._(
     17037,
     'An Android Package Name must be provided if the Android App is required to be installed.',
     'missing-android-pkg-name',
@@ -484,7 +485,8 @@ class FirebaseAuthError extends FirebaseError {
   );
 
   /// Indicates that an attempt was made to present a new web context while one was already being presented.
-  static final FirebaseAuthError webContextAlreadyPresented = FirebaseAuthError._(
+  static final FirebaseAuthError webContextAlreadyPresented =
+      FirebaseAuthError._(
     17057,
     'User interaction is still ongoing, another view cannot be presented.',
     'web-context-already-presented',
@@ -498,7 +500,8 @@ class FirebaseAuthError extends FirebaseError {
   );
 
   /// Indicates a general failure during the app verification flow.
-  static final FirebaseAuthError appVerificationUserInteractionFailure = FirebaseAuthError._(
+  static final FirebaseAuthError appVerificationUserInteractionFailure =
+      FirebaseAuthError._(
     17059,
     'The app verification process has failed, print and inspect the error details for more information',
     'app-verification-failed',
@@ -526,14 +529,16 @@ class FirebaseAuthError extends FirebaseError {
   );
 
   /// Indicates a general failure during a web sign-in flow.
-  static final FirebaseAuthError webSignInUserInteractionFailure = FirebaseAuthError._(
+  static final FirebaseAuthError webSignInUserInteractionFailure =
+      FirebaseAuthError._(
     17063,
     'null',
     'web-user-interaction-failure',
   );
 
   /// Indicates that the local player was not authenticated prior to attempting Game Center signin.
-  static final FirebaseAuthError localPlayerNotAuthenticated = FirebaseAuthError._(
+  static final FirebaseAuthError localPlayerNotAuthenticated =
+      FirebaseAuthError._(
     17066,
     'The local player is not authenticated. Please log the local player in to Game Center.',
     'local-player-not-authenticated',
@@ -636,6 +641,5 @@ class FirebaseAuthCredentialAlreadyInUseError extends FirebaseAuthError {
         );
 
   final AuthCredential credential;
-
-  final String email;
+  final String? email;
 }

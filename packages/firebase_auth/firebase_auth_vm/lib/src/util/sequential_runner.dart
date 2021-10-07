@@ -9,7 +9,7 @@ class SequentialRunner {
 
   final Queue<_TaskQueueEntry<void>> _tasks;
 
-  Completer<void> _recentActiveCompleter;
+  Completer<void>? _recentActiveCompleter;
 
   Future<T> enqueue<T>(Task<T> function) async {
     final _TaskQueueEntry<T> taskEntry = _TaskQueueEntry<T>(function);
@@ -18,7 +18,7 @@ class SequentialRunner {
     _tasks.add(taskEntry);
 
     if (_recentActiveCompleter == null ||
-        _recentActiveCompleter.isCompleted && listWasEmpty) {
+        _recentActiveCompleter!.isCompleted && listWasEmpty) {
       _runNext();
     }
 

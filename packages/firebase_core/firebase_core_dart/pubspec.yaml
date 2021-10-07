@@ -1,0 +1,21 @@
+name: firebase_core_dart
+description: Dart implementation of firebase_core using firebase_core_vm
+version: 0.1.0
+homepage: https://github.com/long1eu/firebase_sdk/tree/main/packages/firebase_core/firebase_core_dart
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  connectivity_plus: ^1.2.0
+  path_provider: ^2.0.5
+  hive: ^2.0.4
+  rxdart: ^0.27.2
+
+  firebase_core_platform_interface: ^4.0.1
+  firebase_platform_dependencies: #^0.0.1+1
+    path: ../firebase_platform_dependencies
+  firebase_core_vm: #^0.0.8
+    path: ../firebase_core_vm

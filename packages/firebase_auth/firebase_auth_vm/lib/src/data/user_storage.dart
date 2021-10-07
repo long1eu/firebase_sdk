@@ -5,16 +5,15 @@
 part of firebase_auth_vm;
 
 class UserStorage {
-  const UserStorage({@required LocalStorage localStorage, @required String appName})
-      : assert(localStorage != null),
-        assert(appName != null),
-        _localStorage = localStorage,
+  const UserStorage(
+      {required LocalStorage localStorage, required String appName})
+      : _localStorage = localStorage,
         _appName = appName;
 
   final LocalStorage _localStorage;
   final String _appName;
 
-  void saveUser(FirebaseUser user) {
+  void saveUser(FirebaseUser? user) {
     if (user != null) {
       final Map<String, dynamic> data = FirebaseUserExtension(user)._json;
       _localStorage.set(_userKey, jsonEncode(data));
@@ -23,8 +22,8 @@ class UserStorage {
     }
   }
 
-  FirebaseUser getUser(FirebaseAuth auth) {
-    final String json = _localStorage.get(_userKey);
+  FirebaseUser? getUser(FirebaseAuth auth) {
+    final String? json = _localStorage.get(_userKey);
     if (json == null) {
       return null;
     }
@@ -36,7 +35,7 @@ class UserStorage {
     return _localStorage.get(_localeKey) ?? 'en';
   }
 
-  set locale(String value) {
+  set locale(String? value) {
     _localStorage.set(_localeKey, value ?? 'en');
   }
 
@@ -50,20 +49,25 @@ class UserStorage {
 extension FirebaseUserExtension on FirebaseUser {
   static FirebaseUser _fromJson(FirebaseAuth auth, Map<String, dynamic> json) {
     final String uid = json['uid'];
+    final String? providerId = json['providerId'];
     final bool isAnonymous = json['isAnonymous'];
     final bool hasEmailPasswordCredential = json['hasEmailPasswordCredential'];
-    final Map<String, UserInfo> providerUserInfo = json.containsKey('providerData')
-        ? Map<String, dynamic>.from(json['providerData'])
-            .map((String key, dynamic value) => MapEntry<String, UserInfo>(key, UserInfo._fromJson(value)))
-        : null;
+    final Map<String, UserInfo> providerUserInfo =
+        json.containsKey('providerData')
+            ? Map<String, dynamic>.from(json['providerData']).map(
+                (String key, dynamic value) =>
+                    MapEntry<String, UserInfo>(key, UserInfo._fromJson(value)))
+            : <String, UserInfo>{};
     final String email = json['email'];
     final String phoneNumber = json['phoneNumber'];
     final bool isEmailVerified = json['isEmailVerified'];
     final String photoUrl = json['photoUrl'];
     final String displayName = json['displayName'];
-    final UserMetadata metadata = json.containsKey('metadata') ? UserMetadata._fromJson(json['metadata']) : null;
+    final UserMetadata metadata =
+        UserMetadata._fromJson(json['metadata'] ?? <dynamic, dynamic>{});
     final String accessToken = json['accessToken'];
-    final DateTime accessTokenExpirationDate = DateTime.fromMicrosecondsSinceEpoch(json['accessTokenExpirationDate']);
+    final DateTime accessTokenExpirationDate =
+        DateTime.fromMicrosecondsSinceEpoch(json['accessTokenExpirationDate']);
     final String refreshToken = json['refreshToken'];
 
     final SecureTokenApi secureTokenApi = SecureTokenApi(
@@ -76,6 +80,7 @@ extension FirebaseUserExtension on FirebaseUser {
     return FirebaseUser._(secureTokenApi, auth)
       .._isAnonymous = isAnonymous
       .._userInfo = UserInfo._(
+        providerId: providerId,
         uid: uid,
         email: email,
         isEmailVerified: isEmailVerified,
@@ -91,20 +96,21 @@ extension FirebaseUserExtension on FirebaseUser {
   Map<String, dynamic> get _json {
     return <String, dynamic>{
       'uid': uid,
+      if (providerId != null) 'providerId': providerId,
       'isAnonymous': isAnonymous,
       'hasEmailPasswordCredential': _hasEmailPasswordCredential,
-      if (providerData != null)
-        'providerData': providerData
-            .asMap()
-            .map<String, dynamic>((_, UserInfo value) => MapEntry<String, dynamic>(value.providerId, value._json)),
+      'providerData': providerData.asMap().map<String?, dynamic>(
+          (_, UserInfo info) =>
+              MapEntry<String?, dynamic>(info.providerId, info._json)),
       'email': email,
       'phoneNumber': phoneNumber,
       'isEmailVerified': isEmailVerified,
       'photoUrl': photoUrl,
       'displayName': displayName,
-      if (metadata != null) 'metadata': metadata._json,
+      'metadata': metadata._json,
       'accessToken': _secureTokenApi._accessToken,
-      'accessTokenExpirationDate': _secureTokenApi._accessTokenExpirationDate.microsecondsSinceEpoch,
+      'accessTokenExpirationDate':
+          _secureTokenApi._accessTokenExpirationDate?.microsecondsSinceEpoch,
       'refreshToken': _secureTokenApi._refreshToken,
     };
   }

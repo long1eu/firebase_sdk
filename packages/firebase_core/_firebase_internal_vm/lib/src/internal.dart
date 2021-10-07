@@ -14,12 +14,12 @@ abstract class InternalTokenProvider {
   ///
   /// [forceRefresh] force refreshes the token. Should only be set to true if
   /// the token is invalidated out of band.
-  Future<GetTokenResult> getAccessToken({required bool forceRefresh});
+  Future<GetTokenResult?> getAccessToken({required bool forceRefresh});
 
   /// A synchronous way to get the current Firebase User's UID.
   /// Returns the String representation of the UID. Returns null if FirebaseAuth
   /// is not linked, or if there is no currently signed-in user.
-  String get uid;
+  String? get uid;
 
   /// Stream that will emit when the user auth state changes, when the user logs
   /// out or the token has been invalidated and it's refreshed.
@@ -30,7 +30,7 @@ abstract class InternalTokenProvider {
 class InternalTokenResult {
   const InternalTokenResult(this.token);
 
-  final String token;
+  final String? token;
 
   @override
   bool operator ==(Object other) {

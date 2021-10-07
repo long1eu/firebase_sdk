@@ -13,8 +13,8 @@ import 'recaptcha_token.dart' as base;
 
 /// Runs an reCAPTCHA flow using an HTTP server.
 ///
-/// It takes a user supplied function which will be called with an URI. The user is expected to navigate to that URI and
-/// verify the challenge.
+/// It takes a user supplied function which will be called with an URI. The user
+/// is expected to navigate to that URI and verify the challenge.
 class RecaptchaToken implements base.RecaptchaToken {
   const RecaptchaToken(this.authApi);
 
@@ -23,7 +23,11 @@ class RecaptchaToken implements base.RecaptchaToken {
   /// Once the user successfully verified the app, the HTTP server will redirect the user agent to a URL pointing to a
   /// locally running HTTP server. Which in turn will be able to extract the recaptcha token.
   @override
-  Future<String> get({UrlPresenter urlPresenter, String apiKey, String languageCode}) async {
+  Future<String> get({
+    required UrlPresenter urlPresenter,
+    required String apiKey,
+    required String languageCode,
+  }) async {
     final Completer<String> completer = Completer<String>();
 
     final GetRecaptchaParamResponse params = await authApi.getRecaptchaParam();
@@ -33,7 +37,8 @@ class RecaptchaToken implements base.RecaptchaToken {
     final int port = server.port;
     final String state = randomString(32);
 
-    final Uri uri = Uri.http('localhost:$port', '__/auth/handler', <String, String>{'state': state});
+    final Uri uri = Uri.http(
+        'localhost:$port', '__/auth/handler', <String, String>{'state': state});
     urlPresenter(uri);
 
     events.listen((HttpRequest request) async {
@@ -43,7 +48,7 @@ class RecaptchaToken implements base.RecaptchaToken {
           request.response
             ..statusCode = 200
             ..headers.set('content-type', 'text/html; charset=UTF-8')
-            ..write(_getInitialHtml(params.recaptchaSiteKey, languageCode));
+            ..write(_getInitialHtml(params.recaptchaSiteKey!, languageCode));
           await request.response.close();
           break;
         case '/favicon.ico':
@@ -57,17 +62,19 @@ class RecaptchaToken implements base.RecaptchaToken {
           break;
         case '/__/auth/handler/response':
           final Uri uri = request.requestedUri;
-          final String returnedState = uri.queryParameters['state'];
-          final String token = uri.queryParameters['token'];
-          final String error = uri.queryParameters['error'];
-          String message;
+          final String? returnedState = uri.queryParameters['state'];
+          final String? token = uri.queryParameters['token'];
+          final String? error = uri.queryParameters['error'];
+          String? message;
 
           if (request.method != 'GET') {
-            message = 'Invalid response from server (expected GET request callback, got: ${request.method}).';
+            message =
+                'Invalid response from server (expected GET request callback, got: ${request.method}).';
           } else if (state != returnedState) {
             message = 'Invalid response from server (state did not match).';
           } else if (error != null) {
-            message = 'Error occurred while obtaining access credentials: ${utf8.decode(base64Decode(error))}';
+            message =
+                'Error occurred while obtaining access credentials: ${utf8.decode(base64Decode(error))}';
           } else if (token == null || token == 'null') {
             message = 'Invalid response from server (no token transmitted).';
           }
@@ -88,13 +95,14 @@ class RecaptchaToken implements base.RecaptchaToken {
             completer.complete(token);
           }
           break;
-
         default:
           print(request.requestedUri);
       }
     });
 
-    return completer.future.timeout(const Duration(minutes: 2)).whenComplete(server.close);
+    return completer.future
+        .timeout(const Duration(minutes: 2))
+        .whenComplete(server.close);
   }
 }
 
@@ -108,23 +116,23 @@ String _getInitialHtml(String siteKey, String languageCode) {
     <script type="text/javascript">
         const url = new URL(window.location.href);
         const state = url.searchParams.get('state');        
-        const redirectURL = 'http://' + url.host + url.pathname + '/response?state=' + state;
+        const redirectURL = `http://\${url.host}\${url.pathname}/response?state=\${state}`;
         
-        var redirect = function(url) {           
+        const redirect = function(url) {           
             window.location = url + "&a=b";
             window.location = url;
         };   
         
-        var onLoad = function() {           
+        const onLoad = function() {           
             grecaptcha.execute();
         };           
-        var onSubmit = function(token) {                      
+        const onSubmit = function(token) {                      
             redirect(redirectURL + '&token=' + token);
         };     
-        var onExpired = function() {
+        const onExpired = function() {
             redirect(redirectURL + '&error=' + btoa('Session expired.'));
         };
-        var onError = function(error) {
+        const onError = function(error) {
             redirect(redirectURL + '&error=' + btoa('' + error));
         };              
     </script>

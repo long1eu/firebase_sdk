@@ -7,13 +7,14 @@ part of firebase_auth_vm;
 /// Represents the parameters for the token endpoint.
 class SecureTokenRequest {
   SecureTokenRequest._({
-    @required this.grantType,
+    required this.grantType,
     this.scope,
     this.refreshToken,
     this.code,
   });
 
-  /// Creates an authorization code request with the given code (legacy Gitkit "ID Token").
+  /// Creates an authorization code request with the given code (legacy Gitkit
+  /// "ID Token").
   ///
   /// Exchanges a Gitkit "ID Token" for an STS Access Token and Refresh Token.
   factory SecureTokenRequest.withCode(String code) {
@@ -24,23 +25,21 @@ class SecureTokenRequest {
   ///
   /// Uses an existing Refresh Token to create a new Access Token.
   factory SecureTokenRequest.withRefreshToken(String refreshToken) {
-    return SecureTokenRequest._(grantType: 'refresh_token', refreshToken: refreshToken);
+    return SecureTokenRequest._(
+        grantType: 'refresh_token', refreshToken: refreshToken);
   }
 
   /// The type of grant requested.
   final String grantType;
 
   /// The scopes requested (a comma-delimited list of scope strings.)
-  /*@nullable*/
-  final String scope;
+  final String? scope;
 
   /// The client's refresh token.
-  /*@nullable*/
-  final String refreshToken;
+  final String? refreshToken;
 
   /// The client's authorization code (legacy Gitkit "ID Token").
-  /*@nullable*/
-  final String code;
+  final String? code;
 
   Map<String, dynamic> get json {
     return <String, dynamic>{
@@ -53,7 +52,7 @@ class SecureTokenRequest {
 
   @override
   String toString() {
-    return (ToStringHelper(SecureTokenRequest) //
+    return (ToStringHelper(SecureTokenRequest)
           ..add('grantType', grantType)
           ..add('scope', scope)
           ..add('refreshToken', refreshToken)
@@ -65,10 +64,10 @@ class SecureTokenRequest {
 /// Represents the response from the token endpoint.
 class SecureTokenResponse {
   SecureTokenResponse._({
-    this.approximateExpirationDate,
-    this.refreshToken,
-    this.accessToken,
-    this.idToken,
+    required this.approximateExpirationDate,
+    required this.refreshToken,
+    required this.accessToken,
+    required this.idToken,
   });
 
   factory SecureTokenResponse.fromJson(Map<dynamic, dynamic> json) {
@@ -78,7 +77,6 @@ class SecureTokenResponse {
       json['expires_in'] = DateTime.now().toUtc().add(duration);
     }
 
-    print(json['expires_in']);
     return SecureTokenResponse._(
       approximateExpirationDate: json['expires_in'],
       refreshToken: json['refresh_token'],
@@ -88,19 +86,15 @@ class SecureTokenResponse {
   }
 
   /// The approximate expiration date of the access token.
-  /*@nullable*/
   final DateTime approximateExpirationDate;
 
   /// The refresh token. (Possibly an updated one for refresh requests.)
-  /*@nullable*/
   final String refreshToken;
 
   /// The new access token.
-  /*@nullable*/
   final String accessToken;
 
   /// The new ID Token.
-  /*@nullable*/
   final String idToken;
 
   @override
